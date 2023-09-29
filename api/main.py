@@ -22,8 +22,9 @@ oauth.register(
     client_kwargs={
         "scope": "openid profile email",
     },
-    server_metadata_url=f'https://{env.get("AUTH0_DOMAIN")}/.well-known/openid-configuration'
+    server_metadata_url=f'https://{env.get("AUTH0_DOMAIN")}/.well-known/openid-configuration',
 )
+
 
 @app.route("/login")
 def login():
@@ -31,17 +32,20 @@ def login():
         redirect_uri=url_for("callback", _external=True)
     )
 
+
 @app.route("/callback", methods=["GET", "POST"])
 def callback():
     token = oauth.auth0.authorize_access_token()
     session["user"] = token
     return redirect("/")
 
+
 @app.route("/logout")
 def logout():
     session.clear()
     return redirect(
-        "https://" + env.get("AUTH0_DOMAIN")
+        "https://"
+        + env.get("AUTH0_DOMAIN")
         + "/v2/logout?"
         + urlencode(
             {
@@ -52,31 +56,46 @@ def logout():
         )
     )
 
+
 @app.route("/")
 def home():
+    return redirect("/self")
+
+
+@app.route("/self")
+def self():
     if session and session.get("user"):
-        pretty=json.dumps(session.get('user'), indent=4)
+        resp = json.dumps(session.get("user"), indent=4)
     else:
-        pretty="Please log in at <a href='/login'>/login</a>"
-    return pretty
-    # return 'Get a user by going to /user/<username>'
+        resp = "Please log in at <a href='/login'>/login</a>"
+    return resp
 
 
-@app.route('/user/<username>')
+@app.route("/user/<username>")
 def user(username):
-    return json.dumps({'username': username,
-                       'profile_pic': '/image/smily_face.png',
-                       'background_pic': '/image/trees.png',
-                       'bio': 'I like the color green and long walks on the beach. My favorite food is pizza. I have a dog named Spot.'})
+    return json.dumps(
+        {
+            "username": username,
+            "profile_pic": "/image/smily_face.png",
+            "background_pic": "/image/trees.png",
+            "bio": "I like the color green and long walks on the beach. My favorite food is pizza. I have a dog named Spot.",
+        }
+    )
 
-@app.route('/image/<image_id>')
+
+@app.route("/image/<image_id>")
 def image(image_id):
     if image_id == "trees.png" or image_id == "smily_face.png":
-        return json.dumps({'image_id': image_id,
-                       'image': base64.b64encode(open("static/"+image_id, 'rb').read()).__str__()
-                       })
-    return json.dumps({'image_id': image_id, 'image': 'not found'})
+        return json.dumps(
+            {
+                "image_id": image_id,
+                "image": base64.b64encode(
+                    open("static/" + image_id, "rb").read()
+                ).__str__(),
+            }
+        )
+    return json.dumps({"image_id": image_id, "image": "not found"})
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     app.run(debug=True)
