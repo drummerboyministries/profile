@@ -70,9 +70,17 @@ def get_user(username):
     return json.dumps(model.get_user(username))
 
 
-@app.route("/user/<username>", methods=["POST"])
-@app.route("/user", methods=["POST"])
-@app.route("/user/", methods=["POST"])
+@app.route("/user/<username>", methods=["DELETE"])
+def delete_user(username):
+    if model.delete_user(username):
+        return "Success", 200
+    else:
+        return "Failure", 500
+
+
+@app.route("/user/<username>", methods=["POST", "PUT"])
+@app.route("/user", methods=["POST", "PUT"])
+@app.route("/user/", methods=["POST", "PUT"])
 def update_user(username=None):
     json_username = request.json.get("username", username)
     if json_username and username and json_username != username:
@@ -103,6 +111,12 @@ def ping():
         return "Success", 200
     else:
         return "Failure", 500
+
+
+@app.route("/reset")
+def reset():
+    model.drop_users()
+    return "Success", 200
 
 
 if __name__ == "__main__":
