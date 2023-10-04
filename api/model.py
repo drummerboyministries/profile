@@ -50,9 +50,38 @@ def get_or_create_user(username):
         return create_user(username)
 
 
-def create_user(username):
-    """Create a new user with the specified username"""
+def create_user(user_obj_or_name):
+    """Create a new user with the specified username or document structure"""
     db = client.Cluster0
-    new_obj = {"username": username}
+    if type(user_obj_or_name) is not str:
+        assert type(user_obj_or_name) is dict, "Username must be a string or dict"
+        new_obj = user_obj_or_name
+    else:
+        new_obj = {"username": user_obj_or_name}
+
+    if existing_user := get_user(new_obj["username"]):
+        return add_fields(existing_user, new_obj)
     record_id = db.users.insert_one(new_obj)
     return make_user_dao(new_obj)
+
+
+def add_fields(username, add_dict):
+    """Add a new fields to the user"""
+    db = client.Cluster0
+    user = get_user(username)
+    db.users.update_one(user, {"$set": add_dict})
+    return get_user(username)
+
+
+def delete_user(username):
+    """Delete the specified user"""
+    db = client.Cluster0
+    db.users.delete_many({"username": username})
+    return True
+
+
+def drop_users():
+    """Delete all users"""
+    db = client.Cluster0
+    db.users.drop()
+    return True

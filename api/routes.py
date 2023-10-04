@@ -68,14 +68,6 @@ def self():
 @app.route("/user/<username>")
 def user(username):
     return json.dumps(model.get_user(username))
-    # return json.dumps(
-    #     {
-    #         "username": username,
-    #         "profile_pic": "/image/smily_face.png",
-    #         "background_pic": "/image/trees.png",
-    #         "bio": "I like the color green and long walks on the beach. My favorite food is pizza. I have a dog named Spot.",
-    #     }
-    # )
 
 
 @app.route("/image/<image_id>")

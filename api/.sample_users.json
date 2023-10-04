@@ -1,0 +1,33 @@
+
+[
+    {
+        "username": "userN",
+        "profile_pic": "/image/smily_face.png",
+        "background_pic": "/image/trees.png",
+        "bio": "I am a user"
+    },
+    {
+        "username": "user1",
+        "profile_pic": "/image/smily_face.png",
+        "background_pic": "/image/trees.png",
+        "bio": "I am a user"
+    },
+    {
+        "username": "user2",
+        "profile_pic": "/image/smily_face.png",
+        "background_pic": "/image/trees.png",
+        "bio": "I am a user"
+    },
+    {
+        "username": "user3",
+        "profile_pic": "/image/smily_face.png",
+        "background_pic": "/image/trees.png",
+        "bio": "I am a user"
+    },
+    {
+        "username": "user4",
+        "profile_pic": "/image/smily_face.png",
+        "background_pic": "/image/trees.png",
+        "bio": "I am a user"
+    }
+]
