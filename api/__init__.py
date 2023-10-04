@@ -1,1 +1,1 @@
-from . import app, main, model
+from . import app, main, model, cli

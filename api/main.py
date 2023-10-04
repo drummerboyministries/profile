@@ -92,7 +92,7 @@ def image(image_id):
     return json.dumps({"image_id": image_id, "image": "not found"})
 
 
-@app.route("/ping")
+@app.route("/check-connections")
 def ping():
     if model.ping():
         return "Success", 200

@@ -1,8 +1,6 @@
 from os import environ as env
 from operator import itemgetter
 
-import click
-
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 
@@ -11,58 +9,52 @@ from .app import app
 uri = f'mongodb+srv://{env.get("mongo_atlas_username")}:{env.get("mongo_atlas_passwd")}@cluster0.th5fhnb.mongodb.net/?retryWrites=true&w=majority&appName=AtlasApp'
 
 # Create a new client and connect to the server
-client = MongoClient(uri, server_api=ServerApi('1'))
+client = MongoClient(uri, server_api=ServerApi("1"))
 
 
-@app.cli.command("ping")
-def _():
-    """Send a ping to the database to confirm a connection"""
-    return ping()
-
-def ping():
-    """Send a ping to the database to confirm a connection"""
-    try:
-        client.admin.command('ping')
-        click.echo("Pinged your deployment. You successfully connected to MongoDB!")
-        return True
-    except Exception as e:
-        click.echo(e)
-        return False
+def select_keys(raw_obj, keys):
+    """Create a DAO"""
+    if raw_obj is None:
+        return {}
+    return {key: raw_obj[key] for key in keys}
 
 
 def make_user_dao(user_raw):
-    """Create a DAO"""
-    if user_raw is None:
-        return {}
-    return itemgetter("username")(user_raw)
+    """make a user DAO"""
+    keys = ["username"]
+    return select_keys(user_raw, keys)
 
 
-@app.cli.command("get-user")
-@click.argument("username")
-def _(username):
-    """Get a user"""
-    return get_user(username)
+def ping():
+    """Return True if the database is available"""
+    try:
+        client.admin.command("ping")
+        return True
+    except Exception as e:
+        print(e)
+        return False
 
 
 def get_user(username):
-    """Get a user"""
+    """Returns specified user"""
     db = client.Cluster0
     user = db.users.find_one({"username": username})
-    click.echo(f"Found user {user}")
     user = make_user_dao(user)
     return user
 
 
-
-@app.cli.command("create-user")
-@click.argument("username")
-def _(username):
-    """Create a new user"""
-    return create_user(username)
+def get_or_create_user(username):
+    """Create a new user with the specified username"""
+    db = client.Cluster0
+    if (user := get_user(username)) is not None:
+        return user
+    else:
+        return create_user(username)
 
 
 def create_user(username):
-    """Create a new user"""
+    """Create a new user with the specified username"""
     db = client.Cluster0
-    db.users.insert_one({"username": username})
-    click.echo(f"Created user {username}")
+    new_obj = {"username": username}
+    record_id = db.users.insert_one(new_obj)
+    return make_user_dao(new_obj)
