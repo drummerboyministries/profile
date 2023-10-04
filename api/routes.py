@@ -71,8 +71,17 @@ def get_user(username):
 
 
 @app.route("/user/<username>", methods=["POST"])
-def update_user(username):
+@app.route("/user", methods=["POST"])
+@app.route("/user/", methods=["POST"])
+def update_user(username=None):
+    json_username = request.json.get("username", username)
+    if json_username and username and json_username != username:
+        return "Username in URL does not match username in JSON", 400
+    elif not username:
+        if not (username := json_username):
+            return "Username not provided", 400
     return model.add_fields(username, request.json)
+
 
 @app.route("/image/<image_id>")
 def image(image_id):
