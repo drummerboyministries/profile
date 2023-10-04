@@ -69,6 +69,8 @@ def add_fields(username, add_dict):
     """Add a new fields to the user"""
     db = client.Cluster0
     user = get_user(username)
+    if not user:
+        user = create_user(username)
     db.users.update_one(user, {"$set": add_dict})
     return get_user(username)
 

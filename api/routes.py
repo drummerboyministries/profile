@@ -78,16 +78,18 @@ def delete_user(username):
         return "Failure", 500
 
 
-@app.route("/user/<username>", methods=["POST", "PUT"])
 @app.route("/user", methods=["POST", "PUT"])
 @app.route("/user/", methods=["POST", "PUT"])
+@app.route("/user/<username>", methods=["POST", "PUT"])
 def update_user(username=None):
     json_username = request.json.get("username", username)
-    if json_username and username and json_username != username:
+    if json_username and username and (json_username != username):
         return "Username in URL does not match username in JSON", 400
     elif not username:
-        if not (username := json_username):
+        if not json_username:
             return "Username not provided", 400
+        else:
+            username = json_username
     return model.add_fields(username, request.json)
 
 
