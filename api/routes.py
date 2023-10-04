@@ -3,7 +3,7 @@ from os import environ as env
 from urllib.parse import quote_plus, urlencode
 
 from authlib.integrations.flask_client import OAuth
-from flask import redirect, session, url_for
+from flask import redirect, session, url_for, request
 
 from .app import app
 from . import model
@@ -65,10 +65,14 @@ def self():
     return resp
 
 
-@app.route("/user/<username>")
-def user(username):
+@app.route("/user/<username>", methods=["GET"])
+def get_user(username):
     return json.dumps(model.get_user(username))
 
+
+@app.route("/user/<username>", methods=["POST"])
+def update_user(username):
+    return model.add_fields(username, request.json)
 
 @app.route("/image/<image_id>")
 def image(image_id):

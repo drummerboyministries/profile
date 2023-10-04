@@ -15,12 +15,12 @@ def select_keys(raw_obj, keys):
     """Create a DAO"""
     if type(raw_obj) is not dict:
         return {}
-    return {key: raw_obj[key] for key in keys}
+    return {key: raw_obj.get(key, None) for key in keys}
 
 
 def make_user_dao(user_raw):
     """make a user DAO"""
-    keys = ["username"]
+    keys = ["username", "profile_pic", "background_pic", "bio", "nonexistent_field"]
     return select_keys(user_raw, keys)
 
 
