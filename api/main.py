@@ -3,18 +3,12 @@ from os import environ as env
 from urllib.parse import quote_plus, urlencode
 
 from authlib.integrations.flask_client import OAuth
-from dotenv import find_dotenv, load_dotenv
-from flask import Flask, redirect, session, url_for
+from flask import redirect, session, url_for
 
-ENV_FILE = find_dotenv()
-if ENV_FILE:
-    load_dotenv(ENV_FILE)
+from .app import app
 
-app = Flask(__name__)
-app.secret_key = env.get("APP_SECRET_KEY") or os.urandom(24)
 
 oauth = OAuth(app)
-
 oauth.register(
     "auth0",
     client_id=env.get("AUTH0_CLIENT_ID"),
