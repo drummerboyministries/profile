@@ -6,7 +6,7 @@ from authlib.integrations.flask_client import OAuth
 from flask import redirect, session, url_for
 
 from .app import app
-
+from . import model
 
 oauth = OAuth(app)
 oauth.register(
@@ -67,14 +67,15 @@ def self():
 
 @app.route("/user/<username>")
 def user(username):
-    return json.dumps(
-        {
-            "username": username,
-            "profile_pic": "/image/smily_face.png",
-            "background_pic": "/image/trees.png",
-            "bio": "I like the color green and long walks on the beach. My favorite food is pizza. I have a dog named Spot.",
-        }
-    )
+    return json.dumps(model.get_user(username))
+    # return json.dumps(
+    #     {
+    #         "username": username,
+    #         "profile_pic": "/image/smily_face.png",
+    #         "background_pic": "/image/trees.png",
+    #         "bio": "I like the color green and long walks on the beach. My favorite food is pizza. I have a dog named Spot.",
+    #     }
+    # )
 
 
 @app.route("/image/<image_id>")
@@ -89,6 +90,14 @@ def image(image_id):
             }
         )
     return json.dumps({"image_id": image_id, "image": "not found"})
+
+
+@app.route("/ping")
+def ping():
+    if model.ping():
+        return "Success", 200
+    else:
+        return "Failure", 500
 
 
 if __name__ == "__main__":
