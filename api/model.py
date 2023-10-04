@@ -1,5 +1,4 @@
 from os import environ as env
-from operator import itemgetter
 
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
@@ -14,7 +13,7 @@ client = MongoClient(uri, server_api=ServerApi("1"))
 
 def select_keys(raw_obj, keys):
     """Create a DAO"""
-    if raw_obj is None:
+    if type(raw_obj) is not dict:
         return {}
     return {key: raw_obj[key] for key in keys}
 
@@ -45,8 +44,7 @@ def get_user(username):
 
 def get_or_create_user(username):
     """Create a new user with the specified username"""
-    db = client.Cluster0
-    if (user := get_user(username)) is not None:
+    if user := get_user(username): # Remember that an empty dict is falsy
         return user
     else:
         return create_user(username)
