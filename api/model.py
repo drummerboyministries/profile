@@ -11,6 +11,12 @@ uri = f'mongodb+srv://{env.get("mongo_atlas_username")}:{env.get("mongo_atlas_pa
 client = MongoClient(uri, server_api=ServerApi("1"))
 
 
+class ForbiddenError(Exception):
+    def __init__(self, message="You are not allowed to do that"):
+        self.message = message
+        super().__init__(self.message)
+
+
 def select_keys(raw_obj, keys):
     """Create a DAO"""
     if type(raw_obj) is not dict:
@@ -18,9 +24,15 @@ def select_keys(raw_obj, keys):
     return {key: raw_obj.get(key, None) for key in keys}
 
 
-def make_user_dao(user_raw):
-    """make a user DAO"""
+def make_profile_dao(user_raw):
+    """make a user profile DAO out of the user"""
     keys = ["username", "profile_pic", "background_pic", "bio", "nonexistent_field"]
+    return select_keys(user_raw, keys)
+
+
+def make_user_dao(user_raw):
+    """make a user user DAO out of the user"""
+    keys = ["username", "auth0_sub", "profile_pic", "background_pic", "bio"]
     return select_keys(user_raw, keys)
 
 
@@ -34,12 +46,25 @@ def ping():
         return False
 
 
-def get_user(username):
+def get_profile(username="", auth0_subject=""):
     """Returns specified user"""
+    user = get_user(username, auth0_subject)
+    if not user:
+        return None
+    return make_profile_dao(user)
+
+
+def get_user(username="", auth0_subject=""):
     db = client.Cluster0
-    user = db.users.find_one({"username": username})
-    user = make_user_dao(user)
-    return user
+    if username and auth0_subject:
+        raise ValueError("Cannot specify both username and auth0_subject")
+    if username:
+        user = db.users.find_one({"username": username})
+    elif auth0_subject:
+        user = db.users.find_one({"auth0_sub": auth0_subject})
+    else:
+        raise ValueError("Must specify either username or auth0_subject")
+    return make_user_dao(user)
 
 
 def get_or_create_user(username):
@@ -50,7 +75,7 @@ def get_or_create_user(username):
         return create_user(username)
 
 
-def create_user(user_obj_or_name):
+def create_user(user_obj_or_name, fields={}):
     """Create a new user with the specified username or document structure"""
     db = client.Cluster0
     if type(user_obj_or_name) is not str:
@@ -59,20 +84,25 @@ def create_user(user_obj_or_name):
     else:
         new_obj = {"username": user_obj_or_name}
 
+    new_obj.update(fields)
     if existing_user := get_user(new_obj["username"]):
         return add_fields(existing_user, new_obj)
     record_id = db.users.insert_one(new_obj)
     return make_user_dao(new_obj)
 
 
-def add_fields(username, add_dict):
+def add_fields(username, add_dict={}):
     """Add a new fields to the user"""
     db = client.Cluster0
-    user = get_user(username)
+    user = get_user(username=username)
+    if add_dict.get("auth0_sub", "") and user.get("auth0_sub", ""):
+        raise ForbiddenError("Cannot claim profile")
+    
     if not user:
         user = create_user(username)
+    
     db.users.update_one(user, {"$set": add_dict})
-    return get_user(username)
+    return make_profile_dao(get_user(username))
 
 
 def delete_user(username):
