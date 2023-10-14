@@ -116,9 +116,10 @@ def update_user(username:str="", claim=False):
             if username and not (json_username == username):
                 return "Username in URL does not match username in JSON", 400
             elif not username:
-                username = json_username # Promote josn_username to username
+                username = json_username # Promote json_username to username
 
         # update the rest of the fields to whatever else is in the json request
+        # note auth0_sub can/will be overwritten if included in the json payload
         add_dict.update(request.json)
     if not username:  # and json_username is false-y, by implication
         username = uuid.uuid4().__str__()

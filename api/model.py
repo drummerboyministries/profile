@@ -25,13 +25,13 @@ def select_keys(raw_obj, keys):
 
 
 def make_profile_dao(user_raw):
-    """make a user profile DAO out of the user"""
+    """make a user profile DAO out of the user model"""
     keys = ["username", "profile_pic", "background_pic", "bio", "nonexistent_field"]
     return select_keys(user_raw, keys)
 
 
 def make_user_dao(user_raw):
-    """make a user user DAO out of the user"""
+    """make a user DAO out of the user model"""
     keys = ["username", "auth0_sub", "profile_pic", "background_pic", "bio"]
     return select_keys(user_raw, keys)
 
