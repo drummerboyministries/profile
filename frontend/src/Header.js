@@ -11,7 +11,7 @@ import Avatar from '@mui/material/Avatar';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 
-import { useNavigate } from 'react-router-dom';
+import { useAuth0 } from "@auth0/auth0-react";
 
 
 function ElevationScroll({ children }) {
@@ -28,23 +28,13 @@ function ElevationScroll({ children }) {
 function Header() {
 
   const [anchorElUser, setAnchorElUser] = useState(null);
-  const navigate = useNavigate();
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget);
   };
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
   };
-
-  function setupUserMenuNav(path) {
-
-    const handleCloseUserMenu = () => {
-      setAnchorElUser(null);
-      navigate(path);
-    };
-
-    return handleCloseUserMenu;
-  }
+  const { loginWithRedirect, logout} = useAuth0();
 
   return (
     <header>
@@ -57,7 +47,7 @@ function Header() {
             </Typography>
 
             <Box sx={{ flex: 1, textAlign: 'right' }}>
-              <Tooltip title="Open user settings">
+              <Tooltip title="Open user options">
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                   <Avatar alt="Me me me" src="/smily_face.png" />
                 </IconButton>
@@ -78,11 +68,11 @@ function Header() {
                 open={Boolean(anchorElUser)}
                 onClose={handleCloseUserMenu}
               >
-                <MenuItem key='Logout' onClick={setupUserMenuNav('/logout')}>
+                <MenuItem key='Logout' onClick={() => logout({ logoutParams: { returnTo: window.location.origin } })}>
                   <Typography textAlign="center">Logout</Typography>
                 </MenuItem>
                 
-                <MenuItem key='Login' onClick={setupUserMenuNav('/login')}>
+                <MenuItem key='Login' onClick={loginWithRedirect}>
                   <Typography textAlign="center">Login</Typography>
                 </MenuItem>
               </Menu>

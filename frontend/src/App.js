@@ -5,6 +5,7 @@ import '@fontsource/roboto/400.css';
 import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
 
+import { Auth0Provider } from '@auth0/auth0-react';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
 import Root from './Root';
@@ -19,9 +20,17 @@ function App() {
     {path:"/logout", element:<Logout />},
   ]);
   return (
-    <div className="App">
+    <Auth0Provider
+      domain="dev-40laa62kpdtgjqtl.us.auth0.com"
+      clientId="3xZlJE0SQaxTufjRC8ZMFrWZszpSQnkx"
+      authorizationParams={{
+        redirect_uri: window.location.origin,
+        audience: "https://dev-40laa62kpdtgjqtl.us.auth0.com/api/v2/"
+      }}
+    >
+
       <RouterProvider router={router} />
-    </div>
+    </Auth0Provider>
   );
 }
 
