@@ -25,7 +25,7 @@ function App() {
       clientId="3xZlJE0SQaxTufjRC8ZMFrWZszpSQnkx"
       authorizationParams={{
         redirect_uri: window.location.origin,
-        audience: "https://dev-40laa62kpdtgjqtl.us.auth0.com/api/v2/"
+        audience: "DBM_profiles"
       }}
     >
 
