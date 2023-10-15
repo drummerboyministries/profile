@@ -29,15 +29,22 @@ function Header() {
 
   const [anchorElUser, setAnchorElUser] = useState(null);
   const navigate = useNavigate();
-
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget);
   };
-
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
-    navigate('/login');
   };
+
+  function setupUserMenuNav(path) {
+
+    const handleCloseUserMenu = () => {
+      setAnchorElUser(null);
+      navigate(path);
+    };
+
+    return handleCloseUserMenu;
+  }
 
   return (
     <header>
@@ -71,10 +78,11 @@ function Header() {
                 open={Boolean(anchorElUser)}
                 onClose={handleCloseUserMenu}
               >
-                <MenuItem key='Logout' onClick={handleCloseUserMenu}>
+                <MenuItem key='Logout' onClick={setupUserMenuNav('/logout')}>
                   <Typography textAlign="center">Logout</Typography>
                 </MenuItem>
-                <MenuItem key='Login' onClick={handleCloseUserMenu}>
+                
+                <MenuItem key='Login' onClick={setupUserMenuNav('/login')}>
                   <Typography textAlign="center">Login</Typography>
                 </MenuItem>
               </Menu>

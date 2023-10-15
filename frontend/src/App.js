@@ -9,12 +9,14 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
 import Root from './Root';
 import Login from './Login';
+import Logout from './Logout';
 
 
 function App() {
   const router = createBrowserRouter([
     {path:"/", element:<Root />},
     {path:"/login", element:<Login />},
+    {path:"/logout", element:<Logout />},
   ]);
   return (
     <div className="App">
