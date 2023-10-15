@@ -15,6 +15,8 @@ import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
 
+import { Link } from 'react-router-dom';
+
 
 function ElevationScroll({ children }) {
   const trigger = useScrollTrigger({
@@ -39,7 +41,6 @@ function Header() {
     setAnchorElUser(null);
   };
 
-  const settings = ['Profile', 'Account', 'Logout'];
   return (
     <header>
       <CssBaseline />
@@ -50,7 +51,7 @@ function Header() {
               Scroll to elevate App bar
             </Typography>
 
-            <Box sx={{ flex: 1, textAlign: 'right'}}>
+            <Box sx={{ flex: 1, textAlign: 'right' }}>
               <Tooltip title="Open user settings">
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                   <Avatar alt="Me me me" src="/smily_face.png" />
@@ -72,11 +73,16 @@ function Header() {
                 open={Boolean(anchorElUser)}
                 onClose={handleCloseUserMenu}
               >
-                {settings.map((setting) => (
-                  <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                    <Typography textAlign="center">{setting}</Typography>
+                <Link to={{ pathname: "/logout" }}>
+                  <MenuItem key='Logout' onClick={handleCloseUserMenu}>
+                    <Typography textAlign="center">Logout</Typography>
                   </MenuItem>
-                ))}
+                </Link>
+                <Link to={{ pathname: "/login" }}>
+                  <MenuItem key='Login' onClick={handleCloseUserMenu}>
+                    <Typography textAlign="center">Login</Typography>
+                  </MenuItem>
+                </Link>
               </Menu>
             </Box>
           </Toolbar>
