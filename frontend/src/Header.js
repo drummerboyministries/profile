@@ -1,4 +1,4 @@
-import { cloneElement, MouseEvent, useState } from 'react';
+import { cloneElement, useState } from 'react';
 import AppBar from '@mui/material/AppBar';
 import CssBaseline from '@mui/material/CssBaseline';
 import Toolbar from '@mui/material/Toolbar';
@@ -7,15 +7,11 @@ import useScrollTrigger from '@mui/material/useScrollTrigger';
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import Menu from '@mui/material/Menu';
-import MenuIcon from '@mui/icons-material/Menu';
-import Container from '@mui/material/Container';
 import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
-import AdbIcon from '@mui/icons-material/Adb';
 
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 
 function ElevationScroll({ children }) {
@@ -32,6 +28,7 @@ function ElevationScroll({ children }) {
 function Header() {
 
   const [anchorElUser, setAnchorElUser] = useState(null);
+  const navigate = useNavigate();
 
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget);
@@ -39,6 +36,7 @@ function Header() {
 
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
+    navigate('/login');
   };
 
   return (
@@ -73,16 +71,12 @@ function Header() {
                 open={Boolean(anchorElUser)}
                 onClose={handleCloseUserMenu}
               >
-                <Link to={{ pathname: "/logout" }}>
-                  <MenuItem key='Logout' onClick={handleCloseUserMenu}>
-                    <Typography textAlign="center">Logout</Typography>
-                  </MenuItem>
-                </Link>
-                <Link to={{ pathname: "/login" }}>
-                  <MenuItem key='Login' onClick={handleCloseUserMenu}>
-                    <Typography textAlign="center">Login</Typography>
-                  </MenuItem>
-                </Link>
+                <MenuItem key='Logout' onClick={handleCloseUserMenu}>
+                  <Typography textAlign="center">Logout</Typography>
+                </MenuItem>
+                <MenuItem key='Login' onClick={handleCloseUserMenu}>
+                  <Typography textAlign="center">Login</Typography>
+                </MenuItem>
               </Menu>
             </Box>
           </Toolbar>
